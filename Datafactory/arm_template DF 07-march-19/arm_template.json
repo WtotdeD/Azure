@@ -1,0 +1,866 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory Name",
+            "defaultValue": "wc-adf-test"
+        },
+        "LinkedServiceCosas_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LinkedServiceCosas'"
+        },
+        "LinkedServiceCosas_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'LinkedServiceCosas'"
+        },
+        "LinkedServiceCosasBlob_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LinkedServiceCosasBlob'"
+        },
+        "DestinationDataset_cfi_properties_typeProperties_fileName": {
+            "type": "string",
+            "defaultValue": "@dataset().cw_fileName"
+        },
+        "DestinationDataset_cfi_properties_typeProperties_folderPath": {
+            "type": "string",
+            "defaultValue": "adfstagedcopytempdata"
+        },
+        "LinkedServiceCosas_properties_typeProperties_userName": {
+            "type": "string",
+            "defaultValue": "RABODEVEU\\Eijndhovenc"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/Cosas_Data')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Copy all the tables of the CosasDatabase",
+                "activities": [
+                    {
+                        "name": "ForEach_cfi",
+                        "type": "ForEach",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@pipeline().parameters.cw_items",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "Copy_cfi",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [
+                                        {
+                                            "name": "Source",
+                                            "value": "@{item().source.tableName}"
+                                        },
+                                        {
+                                            "name": "Destination",
+                                            "value": "adfstagedcopytempdata/@{item().destination.fileName}"
+                                        }
+                                    ],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "SqlSource"
+                                        },
+                                        "sink": {
+                                            "type": "BlobSink",
+                                            "copyBehavior": "MergeFiles"
+                                        },
+                                        "enableStaging": true,
+                                        "stagingSettings": {
+                                            "linkedServiceName": {
+                                                "referenceName": "LinkedServiceCosasBlob",
+                                                "type": "LinkedServiceReference"
+                                            },
+                                            "path": "adfstagedcopytempdata"
+                                        },
+                                        "enableSkipIncompatibleRow": true,
+                                        "redirectIncompatibleRowSettings": {
+                                            "linkedServiceName": {
+                                                "referenceName": "LinkedServiceCosasBlob",
+                                                "type": "LinkedServiceReference"
+                                            },
+                                            "path": "adfstagedcopytempdata"
+                                        }
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "SourceDataset_cfi",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "cw_tableName": "@item().source.tableName"
+                                            }
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "DestinationDataset_cfi",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "cw_fileName": "@item().destination.fileName"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "parameters": {
+                    "cw_items": {
+                        "type": "Array",
+                        "defaultValue": [
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[__MigrationHistory]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[__MigrationHistory].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Account]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Account].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[AdditionalTransactionRisk]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[AdditionalTransactionRisk].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[AdGroups]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[AdGroups].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Asset]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Asset].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[AssetCounterparty]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[AssetCounterparty].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[AuditTrail]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[AuditTrail].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[BookingEntity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[BookingEntity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[BusinessLine]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[BusinessLine].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[BusinessLineMigration]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[BusinessLineMigration].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[CalculationLogs]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[CalculationLogs].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[CapitalImpactLookupEntries]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[CapitalImpactLookupEntries].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[ClassificationScheme]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[ClassificationScheme].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[ClassificationValue]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[ClassificationValue].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Client]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Client].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[ComminglingRisk]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[ComminglingRisk].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[ControlFactor]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[ControlFactor].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[CosasClient]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[CosasClient].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[CosasDataset]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[CosasDataset].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Counterparty]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Counterparty].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[CountryDefinitions]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[CountryDefinitions].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[CountryOfRiskDivisions]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[CountryOfRiskDivisions].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Currency]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Currency].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[DealTypeQuestionnaireAnswers]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[DealTypeQuestionnaireAnswers].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Debtor]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Debtor].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[DebtorDiversifiedPool]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[DebtorDiversifiedPool].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[DebtorDiversifiedPoolConcentration]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[DebtorDiversifiedPoolConcentration].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[DebtorQuestionnaireAnswers]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[DebtorQuestionnaireAnswers].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[DecimalValue]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[DecimalValue].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Department]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Department].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[DilutionRisk]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[DilutionRisk].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[FxRate]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[FxRate].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[HelpText]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[HelpText].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Income]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Income].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Liability]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Liability].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[MaturityAdjustmentMultiplier]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[MaturityAdjustmentMultiplier].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Originator]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Originator].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[ProbabilityOfDefault]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[ProbabilityOfDefault].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[ProductNumber]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[ProductNumber].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[ProgramPwceCalcResultsTrails]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[ProgramPwceCalcResultsTrails].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[ProgramQuestionnaireAnswers]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[ProgramQuestionnaireAnswers].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Programs]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Programs].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[ProgramStatus]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[ProgramStatus].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[ProtectedDebtorPart]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[ProtectedDebtorPart].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Protection]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Protection].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[PwceRiskWeightLookupEntries]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[PwceRiskWeightLookupEntries].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[QuestionCodes]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[QuestionCodes].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[RaboRiskRating]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[RaboRiskRating].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Receivables]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Receivables].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[ReceivablesProtection]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[ReceivablesProtection].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[ReceivablesPwceCalcResultsTrails]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[ReceivablesPwceCalcResultsTrails].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Risk]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Risk].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[RiskDivision]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[RiskDivision].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[RiskWeightDefinitions]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[RiskWeightDefinitions].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Role]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Role].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[RoleDefinition]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[RoleDefinition].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[SecurityGroup]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[SecurityGroup].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[SeederMetaDatas]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[SeederMetaDatas].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Servicer]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Servicer].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Session]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Session].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Spv]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Spv].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[SpvLiability]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[SpvLiability].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[SpvProtection]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[SpvProtection].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Status]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Status].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Structure]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Structure].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[StructureNumbers]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[StructureNumbers].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[SubModels]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[SubModels].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[sysdiagrams]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[sysdiagrams].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Tranche]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Tranche].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[TrancheCalcResults]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[TrancheCalcResults].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[TranchedCalcResults]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[TranchedCalcResults].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[TranchedTrancheCalcResults]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[TranchedTrancheCalcResults].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[Vasicek]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[Vasicek].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[VisitedStructure]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[VisitedStructure].csv')]"
+                                }
+                            }
+                        ]
+                    }
+                },
+                "annotations": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/SourceDataset_cfi')]",
+                "[concat(variables('factoryId'), '/datasets/DestinationDataset_cfi')]",
+                "[concat(variables('factoryId'), '/linkedServices/LinkedServiceCosasBlob')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DestinationDataset_cfi')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LinkedServiceCosasBlob",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "cw_fileName": {
+                        "type": "String"
+                    }
+                },
+                "annotations": [],
+                "type": "AzureBlob",
+                "typeProperties": {
+                    "format": {
+                        "type": "TextFormat",
+                        "columnDelimiter": ",",
+                        "rowDelimiter": "",
+                        "nullValue": "\\N",
+                        "treatEmptyAsNull": true,
+                        "skipLineCount": 0,
+                        "firstRowAsHeader": true
+                    },
+                    "fileName": {
+                        "value": "[parameters('DestinationDataset_cfi_properties_typeProperties_fileName')]",
+                        "type": "Expression"
+                    },
+                    "folderPath": "[parameters('DestinationDataset_cfi_properties_typeProperties_folderPath')]"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/LinkedServiceCosasBlob')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SourceDataset_cfi')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LinkedServiceCosas",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "cw_tableName": {
+                        "type": "String"
+                    }
+                },
+                "annotations": [],
+                "type": "SqlServerTable",
+                "typeProperties": {
+                    "tableName": {
+                        "value": "@dataset().cw_tableName",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/LinkedServiceCosas')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LinkedServiceCosas')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "SqlServer",
+                "typeProperties": {
+                    "connectionString": "[parameters('LinkedServiceCosas_connectionString')]",
+                    "userName": "[parameters('LinkedServiceCosas_properties_typeProperties_userName')]",
+                    "password": {
+                        "type": "SecureString",
+                        "value": "[parameters('LinkedServiceCosas_password')]"
+                    }
+                },
+                "connectVia": {
+                    "referenceName": "Integration-Runtime-Cosas",
+                    "type": "IntegrationRuntimeReference"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/integrationRuntimes/Integration-Runtime-Cosas')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LinkedServiceCosasBlob')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobStorage",
+                "typeProperties": {
+                    "connectionString": "[parameters('LinkedServiceCosasBlob_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/trigger1')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Hour",
+                        "interval": 1,
+                        "startTime": "2019-01-14T14:50:00.000Z",
+                        "endTime": "2019-01-31T14:50:00.000Z",
+                        "timeZone": "UTC"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Integration-Runtime-Cosas')]",
+            "type": "Microsoft.DataFactory/factories/integrationRuntimes",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "SelfHosted",
+                "typeProperties": {}
+            },
+            "dependsOn": []
+        }
+    ]
+}

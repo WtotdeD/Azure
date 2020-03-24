@@ -1,0 +1,163 @@
+{
+  "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.Resources/deployments/Microsoft.Template",
+  "name": "Microsoft.Template",
+  "properties": {
+    "templateHash": "5192753064281130989",
+    "parameters": {
+      "factoryName": {
+        "type": "String",
+        "value": "wc-adf-test"
+      },
+      "linkedServiceCosas_connectionString": {
+        "type": "SecureString"
+      },
+      "linkedServiceCosas_password": {
+        "type": "SecureString"
+      },
+      "linkedServiceCosasBlob_connectionString": {
+        "type": "SecureString"
+      },
+      "destinationDataset_cfi_properties_typeProperties_fileName": {
+        "type": "String",
+        "value": "@dataset().cw_fileName"
+      },
+      "destinationDataset_cfi_properties_typeProperties_folderPath": {
+        "type": "String",
+        "value": "adfstagedcopytempdata"
+      },
+      "linkedServiceCosas_properties_typeProperties_userName": {
+        "type": "String",
+        "value": "RABODEVEU\\Eijndhovenc"
+      }
+    },
+    "mode": "Incremental",
+    "debugSetting": {
+      "detailLevel": "RequestContent, ResponseContent"
+    },
+    "provisioningState": "Succeeded",
+    "timestamp": "2019-03-12T07:33:37.1829982Z",
+    "duration": "PT10.2897169S",
+    "correlationId": "b704fd0d-676d-4613-9113-a4400d65ae81",
+    "providers": [
+      {
+        "namespace": "Microsoft.DataFactory",
+        "resourceTypes": [
+          {
+            "resourceType": "factories/pipelines",
+            "locations": [
+              null
+            ]
+          },
+          {
+            "resourceType": "factories/datasets",
+            "locations": [
+              null
+            ]
+          },
+          {
+            "resourceType": "factories/linkedServices",
+            "locations": [
+              null
+            ]
+          },
+          {
+            "resourceType": "factories/triggers",
+            "locations": [
+              null
+            ]
+          },
+          {
+            "resourceType": "factories/integrationRuntimes",
+            "locations": [
+              null
+            ]
+          }
+        ]
+      }
+    ],
+    "dependencies": [
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/datasets/SourceDataset_cfi",
+            "resourceType": "Microsoft.DataFactory/factories/datasets",
+            "resourceName": "wc-adf-test/SourceDataset_cfi"
+          },
+          {
+            "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/datasets/DestinationDataset_cfi",
+            "resourceType": "Microsoft.DataFactory/factories/datasets",
+            "resourceName": "wc-adf-test/DestinationDataset_cfi"
+          },
+          {
+            "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/linkedServices/LinkedServiceCosasBlob",
+            "resourceType": "Microsoft.DataFactory/factories/linkedServices",
+            "resourceName": "wc-adf-test/LinkedServiceCosasBlob"
+          }
+        ],
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/pipelines/Cosas_Data",
+        "resourceType": "Microsoft.DataFactory/factories/pipelines",
+        "resourceName": "wc-adf-test/Cosas_Data"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/linkedServices/LinkedServiceCosasBlob",
+            "resourceType": "Microsoft.DataFactory/factories/linkedServices",
+            "resourceName": "wc-adf-test/LinkedServiceCosasBlob"
+          }
+        ],
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/datasets/DestinationDataset_cfi",
+        "resourceType": "Microsoft.DataFactory/factories/datasets",
+        "resourceName": "wc-adf-test/DestinationDataset_cfi"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/linkedServices/LinkedServiceCosas",
+            "resourceType": "Microsoft.DataFactory/factories/linkedServices",
+            "resourceName": "wc-adf-test/LinkedServiceCosas"
+          }
+        ],
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/datasets/SourceDataset_cfi",
+        "resourceType": "Microsoft.DataFactory/factories/datasets",
+        "resourceName": "wc-adf-test/SourceDataset_cfi"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/integrationRuntimes/Integration-Runtime-Cosas",
+            "resourceType": "Microsoft.DataFactory/factories/integrationRuntimes",
+            "resourceName": "wc-adf-test/Integration-Runtime-Cosas"
+          }
+        ],
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/linkedServices/LinkedServiceCosas",
+        "resourceType": "Microsoft.DataFactory/factories/linkedServices",
+        "resourceName": "wc-adf-test/LinkedServiceCosas"
+      }
+    ],
+    "outputResources": [
+      {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/datasets/DestinationDataset_cfi"
+      },
+      {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/datasets/SourceDataset_cfi"
+      },
+      {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/integrationRuntimes/Integration-Runtime-Cosas"
+      },
+      {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/linkedServices/LinkedServiceCosas"
+      },
+      {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/linkedServices/LinkedServiceCosasBlob"
+      },
+      {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/pipelines/Cosas_Data"
+      },
+      {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/triggers/trigger1"
+      }
+    ],
+    "validationLevel": "Template"
+  }
+}

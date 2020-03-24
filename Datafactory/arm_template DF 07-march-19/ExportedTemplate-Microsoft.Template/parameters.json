@@ -1,0 +1,21 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "value": "wc-adf-test"
+        },
+        "linkedServiceCosas_connectionString": {},
+        "linkedServiceCosas_password": {},
+        "linkedServiceCosasBlob_connectionString": {},
+        "destinationDataset_cfi_properties_typeProperties_fileName": {
+            "value": "@dataset().cw_fileName"
+        },
+        "destinationDataset_cfi_properties_typeProperties_folderPath": {
+            "value": "adfstagedcopytempdata"
+        },
+        "linkedServiceCosas_properties_typeProperties_userName": {
+            "value": "RABODEVEU\\Eijndhovenc"
+        }
+    }
+}

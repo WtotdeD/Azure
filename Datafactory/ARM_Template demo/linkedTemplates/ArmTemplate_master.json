@@ -1,0 +1,84 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory Name",
+            "defaultValue": "Test-Factory-03-2019"
+        },
+        "LinkedService_On_Prem_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LinkedService_On_Prem'"
+        },
+        "LinkedService_On_Prem_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'LinkedService_On_Prem'"
+        },
+        "LinkedService_Blob_In_Cloud_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LinkedService_Blob_In_Cloud'"
+        },
+        "DestinationDataset_br0_properties_typeProperties_fileName": {
+            "type": "string",
+            "defaultValue": "@dataset().cw_fileName"
+        },
+        "DestinationDataset_br0_properties_typeProperties_folderPath": {
+            "type": "string",
+            "defaultValue": "sec-uat-container"
+        },
+        "LinkedService_On_Prem_properties_typeProperties_userName": {
+            "type": "string",
+            "defaultValue": "RABODEVEU\\Eijndhovenc"
+        },
+        "containerUri": {
+            "type": "string",
+            "metadata": "URI to storage account containing linked ARM templates"
+        },
+        "containerSasToken": {
+            "type": "string",
+            "metadata": "Sas Token to storage account containing linked ARM templates"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "ArmTemplate_0",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-02-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "LinkedService_Blob_In_Cloud_connectionString": {
+                        "value": "[parameters('LinkedService_Blob_In_Cloud_connectionString')]"
+                    },
+                    "LinkedService_On_Prem_connectionString": {
+                        "value": "[parameters('LinkedService_On_Prem_connectionString')]"
+                    },
+                    "LinkedService_On_Prem_password": {
+                        "value": "[parameters('LinkedService_On_Prem_password')]"
+                    },
+                    "DestinationDataset_br0_properties_typeProperties_fileName": {
+                        "value": "[parameters('DestinationDataset_br0_properties_typeProperties_fileName')]"
+                    },
+                    "DestinationDataset_br0_properties_typeProperties_folderPath": {
+                        "value": "[parameters('DestinationDataset_br0_properties_typeProperties_folderPath')]"
+                    },
+                    "LinkedService_On_Prem_properties_typeProperties_userName": {
+                        "value": "[parameters('LinkedService_On_Prem_properties_typeProperties_userName')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

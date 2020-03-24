@@ -1,0 +1,15 @@
+{
+	"name": "ConnectAzureDB",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "integrated security=False;encrypt=True;connection timeout=30;data source=rdmstestazuredb.database.windows.net;initial catalog=TestAzureDB;user id=rdmstestazuredb",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI2NzBmMDQzOC1iYzUzLTQ0MzItOWFlNS1kMzI2MDgwMGYzNTAiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "integrationRuntimeMesa",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

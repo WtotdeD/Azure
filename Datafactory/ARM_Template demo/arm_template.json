@@ -1,0 +1,3324 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory Name",
+            "defaultValue": "Test-Factory-03-2019"
+        },
+        "LinkedService_On_Prem_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LinkedService_On_Prem'"
+        },
+        "LinkedService_On_Prem_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'LinkedService_On_Prem'"
+        },
+        "LinkedService_Blob_In_Cloud_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LinkedService_Blob_In_Cloud'"
+        },
+        "DestinationDataset_br0_properties_typeProperties_fileName": {
+            "type": "string",
+            "defaultValue": "@dataset().cw_fileName"
+        },
+        "DestinationDataset_br0_properties_typeProperties_folderPath": {
+            "type": "string",
+            "defaultValue": "sec-uat-container"
+        },
+        "LinkedService_On_Prem_properties_typeProperties_userName": {
+            "type": "string",
+            "defaultValue": "RABODEVEU\\Eijndhovenc"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/Copy_on_Prem_to_Blob')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "ForEach_br0",
+                        "type": "ForEach",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@pipeline().parameters.cw_items",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "Copy_br0",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [
+                                        {
+                                            "name": "Source",
+                                            "value": "@{item().source.tableName}"
+                                        },
+                                        {
+                                            "name": "Destination",
+                                            "value": "sec-uat-container/@{item().destination.fileName}"
+                                        }
+                                    ],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "SqlSource"
+                                        },
+                                        "sink": {
+                                            "type": "BlobSink",
+                                            "copyBehavior": "MergeFiles"
+                                        },
+                                        "enableStaging": true,
+                                        "stagingSettings": {
+                                            "linkedServiceName": {
+                                                "referenceName": "LinkedService_Blob_In_Cloud",
+                                                "type": "LinkedServiceReference"
+                                            },
+                                            "path": "sec-uat-container"
+                                        }
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "SourceDataset_br0",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "cw_tableName": "@item().source.tableName"
+                                            }
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "DestinationDataset_br0",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "cw_fileName": "@item().destination.fileName"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "parameters": {
+                    "cw_items": {
+                        "type": "Array",
+                        "defaultValue": [
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[AppInfo]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[AppInfo].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[AppSettings]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[AppSettings].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[BusinessAlert]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[BusinessAlert].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[BusinessAlertDependency]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[BusinessAlertDependency].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[BusinessAlertNotification]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[BusinessAlertNotification].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[BusinessAlertSubscription]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[BusinessAlertSubscription].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[Calendar]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[Calendar].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[CalendarItem]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[CalendarItem].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[CalendarItemAssignee]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[CalendarItemAssignee].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[CalendarItemRecordAssociation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[CalendarItemRecordAssociation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[CalendarItemRemindersCache]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[CalendarItemRemindersCache].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[CalendarItemRoleAssociation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[CalendarItemRoleAssociation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[CalendarItemType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[CalendarItemType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[CalendarPermissions]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[CalendarPermissions].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[CalendarSupportedItemType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[CalendarSupportedItemType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[Chart]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[Chart].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataEndPoint]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataEndPoint].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataEndPointCategory]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataEndPointCategory].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataEndPointCategoryAdhocReport]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataEndPointCategoryAdhocReport].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataEndPointCategoryQuery]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataEndPointCategoryQuery].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataEndPointCategoryQueryParameter]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataEndPointCategoryQueryParameter].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataEndPointEntityOption]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataEndPointEntityOption].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataEndPointFieldMap]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataEndPointFieldMap].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataEndPointImportValidation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataEndPointImportValidation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataEndPointType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataEndPointType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataEntityQuestionnaire]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataEntityQuestionnaire].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataQuery]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataQuery].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataQueryCategory]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataQueryCategory].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataQueryEntity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataQueryEntity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataQueryField]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataQueryField].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataQueryFieldSet]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataQueryFieldSet].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataQueryPivotField]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataQueryPivotField].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataQueryProjectedField]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataQueryProjectedField].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataQueryProjectedFieldMetadata]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataQueryProjectedFieldMetadata].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[DataQuerySortField]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[DataQuerySortField].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[FileStore]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[FileStore].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[FileStoreFile]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[FileStoreFile].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[FileStoreFolder]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[FileStoreFolder].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[FolderWatchSetup]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[FolderWatchSetup].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[FormatMask]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[FormatMask].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[GridView]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[GridView].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[GridViewChart]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[GridViewChart].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[GridViewColumn]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[GridViewColumn].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[GridViewFilter]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[GridViewFilter].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[PeriodDefinition]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[PeriodDefinition].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[ProcessContext]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[ProcessContext].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[ProcessWorkflowActivityCatalog]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[ProcessWorkflowActivityCatalog].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[ProcessWorkflowDefinition]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[ProcessWorkflowDefinition].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[ProcessWorkflowInstance]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[ProcessWorkflowInstance].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[ProcessWorkflowInstanceActivity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[ProcessWorkflowInstanceActivity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[ProcessWorkflowInstanceActivityAssignment]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[ProcessWorkflowInstanceActivityAssignment].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[ProcessWorkflowInstanceActivityChecklist]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[ProcessWorkflowInstanceActivityChecklist].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[ProcessWorkflowInstanceActivityComment]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[ProcessWorkflowInstanceActivityComment].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[ProcessWorkflowInstanceActivityRecord]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[ProcessWorkflowInstanceActivityRecord].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[ProcessWorkflowInstanceActivityTask]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[ProcessWorkflowInstanceActivityTask].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[Questionnaire]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[Questionnaire].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[QuestionnaireDefinition]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[QuestionnaireDefinition].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[RecordView]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[RecordView].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[RecordViewElementInteraction]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[RecordViewElementInteraction].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[RecordViewField]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[RecordViewField].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[RecordViewItem]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[RecordViewItem].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[RecordViewItemType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[RecordViewItemType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[RecordViewRecordDefault]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[RecordViewRecordDefault].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[RecordViewSection]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[RecordViewSection].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[RecordViewSectionType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[RecordViewSectionType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[Report]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[Report].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[ReportCategory]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[ReportCategory].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[ReportDataset]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[ReportDataset].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[ReportElement]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[ReportElement].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[SiteMenu]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[SiteMenu].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[TaskLock]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[TaskLock].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[TaskSchedule]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[TaskSchedule].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[WorkflowActivityCatalog]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[WorkflowActivityCatalog].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[WorkflowDefinition]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[WorkflowDefinition].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[WorkflowDefinitionCategory]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[WorkflowDefinitionCategory].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[WorkflowEventCatalog]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[WorkflowEventCatalog].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[WorkflowInstance]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[WorkflowInstance].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'app].[WorkflowInstanceCategory]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'app].[WorkflowInstanceCategory].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_AgcoCDAUSOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_AgcoCDAUSOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_AgcoUKOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_AgcoUKOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CNHOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CNHOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoABS]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoABS].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoAgcoUK]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoAgcoUK].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoAutoLease]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoAutoLease].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoCCT]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoCCT].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoCDO]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoCDO].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoCLD]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoCLD].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoCNHTrinity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoCNHTrinity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoConduit]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoConduit].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoConsumerLoans]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoConsumerLoans].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoDunkinBrands]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoDunkinBrands].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoErasmus]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoErasmus].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoFilmDist]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoFilmDist].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoFloorplanTrade]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoFloorplanTrade].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoFranchiseLoans]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoFranchiseLoans].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoMonetization]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoMonetization].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoMortgages]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoMortgages].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoSecuritiesPool]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoSecuritiesPool].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoSPFCLO]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoSPFCLO].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CollateralInfoWBS]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CollateralInfoWBS].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_CostOfFunds]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_CostOfFunds].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Countries]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Countries].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Deal$DealSpecificInvestmentInformation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Deal$DealSpecificInvestmentInformation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Deal$Ratings]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Deal$Ratings].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Deal$WBSInvestmentInformation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Deal$WBSInvestmentInformation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Deal]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Deal].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_DealCreditEnhancement]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_DealCreditEnhancement].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_DealExternalContact]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_DealExternalContact].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_DealFees]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_DealFees].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_DealInternalContact]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_DealInternalContact].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_DealLegalEntities]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_DealLegalEntities].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_DealTeam]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_DealTeam].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_DealWrapProvider]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_DealWrapProvider].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_DeanFoodsOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_DeanFoodsOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Firms]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Firms].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_FundingSource]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_FundingSource].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_FundingSourceComments]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_FundingSourceComments].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Fx]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Fx].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Liquidity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Liquidity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_NAMonthlyReports]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_NAMonthlyReports].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Obligors]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Obligors].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Originators$CNHTrinity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Originators$CNHTrinity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Originators$CollateralInfo]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Originators$CollateralInfo].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Originators$FloorplanTrade]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Originators$FloorplanTrade].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Originators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Originators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_PrintpackOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_PrintpackOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_ProductionIssueLog]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_ProductionIssueLog].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_ReportComments]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_ReportComments].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_ReportContact]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_ReportContact].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_ReportFootnotes]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_ReportFootnotes].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_RepublicOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_RepublicOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_SupervaluOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_SupervaluOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Tranche$InvestmentInformation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Tranche$InvestmentInformation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Tranche$Monitoring]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Tranche$Monitoring].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Tranche$Rating]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Tranche$Rating].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_Tranche]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_Tranche].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_TrancheFees]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_TrancheFees].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[CT_TrancheLegalEntities]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[CT_TrancheLegalEntities].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[FS_Deal]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[FS_Deal].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[FS_NAMonthlyReports]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[FS_NAMonthlyReports].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[FS_UserDocs]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[FS_UserDocs].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RecordUserRole]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RecordUserRole].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_AgcoCDAUSOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_AgcoCDAUSOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_AgcoUKOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_AgcoUKOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CNHOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CNHOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoABS]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoABS].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoAgcoUK]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoAgcoUK].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoAutoLease]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoAutoLease].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoCCT]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoCCT].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoCDO]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoCDO].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoCLD]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoCLD].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoCNHTrinity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoCNHTrinity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoConduit]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoConduit].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoConsumerLoans]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoConsumerLoans].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoDunkinBrands]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoDunkinBrands].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoErasmus]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoErasmus].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoFilmDist]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoFilmDist].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoFloorplanTrade]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoFloorplanTrade].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoFranchiseLoans]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoFranchiseLoans].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoMonetization]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoMonetization].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoMortgages]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoMortgages].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoSecuritiesPool]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoSecuritiesPool].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoSPFCLO]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoSPFCLO].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CollateralInfoWBS]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CollateralInfoWBS].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_CostOfFunds]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_CostOfFunds].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_Countries]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_Countries].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_Deal]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_Deal].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_DealCreditEnhancement]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_DealCreditEnhancement].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_DealExternalContact]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_DealExternalContact].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_DealFees]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_DealFees].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_DealInternalContact]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_DealInternalContact].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_DealLegalEntities]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_DealLegalEntities].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_DealTeam]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_DealTeam].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_DealWrapProvider]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_DealWrapProvider].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_DeanFoodsOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_DeanFoodsOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_Firms]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_Firms].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_FundingSource]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_FundingSource].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_FundingSourceComments]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_FundingSourceComments].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_Fx]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_Fx].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_Liquidity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_Liquidity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_NAMonthlyReports]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_NAMonthlyReports].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_Obligors]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_Obligors].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_Originators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_Originators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_PrintpackOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_PrintpackOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_ProductionIssueLog]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_ProductionIssueLog].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_ReportComments]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_ReportComments].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_ReportContact]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_ReportContact].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_ReportFootnotes]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_ReportFootnotes].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_RepublicOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_RepublicOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_SupervaluOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_SupervaluOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_Tranche]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_Tranche].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_TrancheFees]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_TrancheFees].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'appSupport].[RS_TrancheLegalEntities]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'appSupport].[RS_TrancheLegalEntities].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'audit].[DataStructure]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'audit].[DataStructure].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'audit].[DataStructureAttribute]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'audit].[DataStructureAttribute].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'audit].[DataStructureCalculation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'audit].[DataStructureCalculation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'audit].[DataView]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'audit].[DataView].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'audit].[DataViewAttribute]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'audit].[DataViewAttribute].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'audit].[PermissionChanges]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'audit].[PermissionChanges].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'audit].[RecordPermissions]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'audit].[RecordPermissions].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'audit].[RecordViewAccess]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'audit].[RecordViewAccess].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'audit].[RoleMembershipChanges]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'audit].[RoleMembershipChanges].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'audit].[Security]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'audit].[Security].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'audit].[SecurityAdministration]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'audit].[SecurityAdministration].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'audit].[SecurityAdministrationAttribute]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'audit].[SecurityAdministrationAttribute].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'dbo].[sysdiagrams]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'dbo].[sysdiagrams].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'log].[ActivityLog]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'log].[ActivityLog].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'log].[DataEndPointImport]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'log].[DataEndPointImport].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'log].[DataEndPointImportBatch]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'log].[DataEndPointImportBatch].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'log].[DataEndPointImportRecord]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'log].[DataEndPointImportRecord].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'log].[DataEndPointImportValidation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'log].[DataEndPointImportValidation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'log].[DataEndPointImportValidationComment]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'log].[DataEndPointImportValidationComment].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'log].[LogCategory]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'log].[LogCategory].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'log].[LogEntry]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'log].[LogEntry].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'log].[LogEntryCategory]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'log].[LogEntryCategory].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'meta].[Column]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'meta].[Column].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'meta].[ColumnCategory]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'meta].[ColumnCategory].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'meta].[DataClassification]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'meta].[DataClassification].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'meta].[DataClassificationChar]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'meta].[DataClassificationChar].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'meta].[DataClassificationCharCalculation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'meta].[DataClassificationCharCalculation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'meta].[DataClassificationCharCalculationDependency]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'meta].[DataClassificationCharCalculationDependency].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'meta].[DataClassificationCharCategory]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'meta].[DataClassificationCharCategory].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'meta].[DataClassificationRelationship]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'meta].[DataClassificationRelationship].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'meta].[DataEntity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'meta].[DataEntity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'meta].[DataEntityGroupingAttribute]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'meta].[DataEntityGroupingAttribute].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'meta].[DataEntityRelationship]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'meta].[DataEntityRelationship].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'meta].[Table]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'meta].[Table].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'perf].[Recommendation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'perf].[Recommendation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'perf].[RecommendationDetailIndex]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'perf].[RecommendationDetailIndex].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'perf].[RecommendationHistory]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'perf].[RecommendationHistory].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'profile].[RecentlyUsedDataQuery]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'profile].[RecentlyUsedDataQuery].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'profile].[RecentlyUsedExternalReport]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'profile].[RecentlyUsedExternalReport].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'profile].[RecentlyUsedReport]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'profile].[RecentlyUsedReport].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'profile].[UserDashboard]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'profile].[UserDashboard].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'profile].[UserDefaultGridViewFilter]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'profile].[UserDefaultGridViewFilter].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'profile].[UserDefaultViews]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'profile].[UserDefaultViews].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'profile].[UserSettings]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'profile].[UserSettings].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'sec].[ApplicationFeature]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'sec].[ApplicationFeature].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'sec].[ItemPermissions]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'sec].[ItemPermissions].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'sec].[PasswordHistory]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'sec].[PasswordHistory].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'sec].[RecordPermissions]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'sec].[RecordPermissions].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'sec].[Role]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'sec].[Role].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'sec].[Securable]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'sec].[Securable].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'sec].[SecurityObject]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'sec].[SecurityObject].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'sec].[SecurityObjectPermissions]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'sec].[SecurityObjectPermissions].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'sec].[SecurityObjectRelation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'sec].[SecurityObjectRelation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'sec].[SiteMenuRole]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'sec].[SiteMenuRole].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'sec].[User]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'sec].[User].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[ABSECAdmins]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[ABSECAdmins].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[AcctgFirm]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[AcctgFirm].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[AgcoCDAUSOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[AgcoCDAUSOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[AgcoUKOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[AgcoUKOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Approvers]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Approvers].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[AssetInterestRating]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[AssetInterestRating].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[AssetOrigin]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[AssetOrigin].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[AssetType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[AssetType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CalcBasis]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CalcBasis].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CEPool]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CEPool].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CEType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CEType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CNHOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CNHOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoABS]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoABS].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoAgcoUK]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoAgcoUK].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoAutoLease]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoAutoLease].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoCCT]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoCCT].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoCDO]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoCDO].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoCLD]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoCLD].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoCNHTrinity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoCNHTrinity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoConduit]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoConduit].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoConsumerLoans]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoConsumerLoans].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoDunkinBrands]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoDunkinBrands].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoErasmus]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoErasmus].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoFilmDist]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoFilmDist].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoFloorplanTrade]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoFloorplanTrade].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoFranchiseLoans]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoFranchiseLoans].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoMonetization]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoMonetization].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoMortgages]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoMortgages].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoSecuritiesPool]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoSecuritiesPool].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoSPFCLO]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoSPFCLO].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CollateralInfoWBS]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CollateralInfoWBS].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Committed]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Committed].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Contact]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Contact].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[ContactDesignations]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[ContactDesignations].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CostOfFunds]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CostOfFunds].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Countries]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Countries].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CountriesDropdown]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CountriesDropdown].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Country]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Country].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[CreditEnhancementType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[CreditEnhancementType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Currency]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Currency].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DataEndPointDealValidation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DataEndPointDealValidation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DBRSLongTermRatings]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DBRSLongTermRatings].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DBRSShortTermRatings]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DBRSShortTermRatings].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Deal$DealSpecificInvestmentInformation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Deal$DealSpecificInvestmentInformation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Deal$Ratings]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Deal$Ratings].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Deal$WBSInvestmentInformation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Deal$WBSInvestmentInformation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Deal]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Deal].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DealCreditEnhancement]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DealCreditEnhancement].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DealExternalContact]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DealExternalContact].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DealFees]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DealFees].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DealInternalContact]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DealInternalContact].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DealLegalEntities]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DealLegalEntities].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DealStatus]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DealStatus].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DealTeam]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DealTeam].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DealTeamRoles]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DealTeamRoles].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DealTemplatePages]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DealTemplatePages].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DealType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DealType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DealWrapProvider]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DealWrapProvider].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[DeanFoodsOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[DeanFoodsOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[ExternalContact]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[ExternalContact].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[FeeSourceType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[FeeSourceType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[FeeType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[FeeType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Firms]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Firms].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[FitchLongTermRatings]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[FitchLongTermRatings].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[FitchRating]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[FitchRating].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[FitchShortTermRatings]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[FitchShortTermRatings].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[FormOfFacility]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[FormOfFacility].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[FormOfInterest]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[FormOfInterest].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Frequency]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Frequency].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[FundingSource]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[FundingSource].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[FundingSourceComments]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[FundingSourceComments].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Fx]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Fx].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Industry]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Industry].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[IntenalRating]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[IntenalRating].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[IssueCategory]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[IssueCategory].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[IssueLogTeam]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[IssueLogTeam].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[IssuePriority]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[IssuePriority].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[IssueStatus]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[IssueStatus].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[LCType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[LCType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[LegalEntity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[LegalEntity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[LegalEntityType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[LegalEntityType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Liquidity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Liquidity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[ListOfErasmusSecuritiesToBeMonitored]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[ListOfErasmusSecuritiesToBeMonitored].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[MarketableSecurity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[MarketableSecurity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Memeber]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Memeber].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[MonoProvider]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[MonoProvider].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[MoodysLongTermRatings]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[MoodysLongTermRatings].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[MoodysRating]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[MoodysRating].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[MoodysShortTermRatings]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[MoodysShortTermRatings].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[NAMonthlyReports]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[NAMonthlyReports].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[NatureOfRating]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[NatureOfRating].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Obligors]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Obligors].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[ObligorsStd]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[ObligorsStd].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Originators$CNHTrinity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Originators$CNHTrinity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Originators$CollateralInfo]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Originators$CollateralInfo].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Originators$FloorplanTrade]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Originators$FloorplanTrade].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Originators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Originators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[PoolName]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[PoolName].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[PrintpackOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[PrintpackOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Probability]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Probability].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[ProductionIssueLog]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[ProductionIssueLog].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Region]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Region].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[ReportComments]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[ReportComments].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[ReportContact]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[ReportContact].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[ReportFootnotes]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[ReportFootnotes].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[RepublicOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[RepublicOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Resource]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Resource].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Role]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Role].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[RRR]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[RRR].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[S_PRating]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[S_PRating].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Sector]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Sector].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[SecuritizationReports]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[SecuritizationReports].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[SecurityType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[SecurityType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Seller]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Seller].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[SPLongTermRatings]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[SPLongTermRatings].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[SPShortTermRatings]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[SPShortTermRatings].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[StandardInsurerMapping]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[StandardInsurerMapping].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[StandardInsurerMasterList]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[StandardInsurerMasterList].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[StandardObligorMapping]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[StandardObligorMapping].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[StandardObligorMasterList]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[StandardObligorMasterList].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[State]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[State].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[SupervaluOriginators]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[SupervaluOriginators].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[SysFlagRAReport]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[SysFlagRAReport].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[SysFlagSNPReport]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[SysFlagSNPReport].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Tranche$InvestmentInformation]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Tranche$InvestmentInformation].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Tranche$Monitoring]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Tranche$Monitoring].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Tranche$Rating]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Tranche$Rating].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[Tranche]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[Tranche].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[TrancheFees]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[TrancheFees].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[TrancheLegalEntities]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[TrancheLegalEntities].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[TransactionType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[TransactionType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[UserActivity]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[UserActivity].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[UserActivityStatus]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[UserActivityStatus].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[UserDocs]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[UserDocs].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[WrapProvider]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[WrapProvider].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[WrapProviderType]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[WrapProviderType].csv')]"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "tableName": "[concat('[', 'user].[YesNo]')]"
+                                },
+                                "destination": {
+                                    "fileName": "[concat('[', 'user].[YesNo].csv')]"
+                                }
+                            }
+                        ]
+                    }
+                },
+                "annotations": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/SourceDataset_br0')]",
+                "[concat(variables('factoryId'), '/datasets/DestinationDataset_br0')]",
+                "[concat(variables('factoryId'), '/linkedServices/LinkedService_Blob_In_Cloud')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SourceDataset_br0')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LinkedService_On_Prem",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "cw_tableName": {
+                        "type": "String"
+                    }
+                },
+                "annotations": [],
+                "type": "SqlServerTable",
+                "typeProperties": {
+                    "tableName": {
+                        "value": "@dataset().cw_tableName",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/LinkedService_On_Prem')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DestinationDataset_br0')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LinkedService_Blob_In_Cloud",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "cw_fileName": {
+                        "type": "String"
+                    }
+                },
+                "annotations": [],
+                "type": "AzureBlob",
+                "typeProperties": {
+                    "format": {
+                        "type": "TextFormat",
+                        "columnDelimiter": ",",
+                        "rowDelimiter": "",
+                        "nullValue": "\\N",
+                        "treatEmptyAsNull": true,
+                        "skipLineCount": 0,
+                        "firstRowAsHeader": false
+                    },
+                    "fileName": {
+                        "value": "[parameters('DestinationDataset_br0_properties_typeProperties_fileName')]",
+                        "type": "Expression"
+                    },
+                    "folderPath": "[parameters('DestinationDataset_br0_properties_typeProperties_folderPath')]"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/LinkedService_Blob_In_Cloud')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/integrationRuntime-Test-Factory-03-2019')]",
+            "type": "Microsoft.DataFactory/factories/integrationRuntimes",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "SelfHosted",
+                "typeProperties": {}
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LinkedService_On_Prem')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "SqlServer",
+                "typeProperties": {
+                    "connectionString": "[parameters('LinkedService_On_Prem_connectionString')]",
+                    "userName": "[parameters('LinkedService_On_Prem_properties_typeProperties_userName')]",
+                    "password": {
+                        "type": "SecureString",
+                        "value": "[parameters('LinkedService_On_Prem_password')]"
+                    }
+                },
+                "connectVia": {
+                    "referenceName": "integrationRuntime-Test-Factory-03-2019",
+                    "type": "IntegrationRuntimeReference"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntime-Test-Factory-03-2019')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LinkedService_Blob_In_Cloud')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobStorage",
+                "typeProperties": {
+                    "connectionString": "[parameters('LinkedService_Blob_In_Cloud_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

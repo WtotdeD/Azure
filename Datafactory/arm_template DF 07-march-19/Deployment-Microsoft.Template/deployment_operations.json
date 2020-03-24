@@ -1,0 +1,1771 @@
+[
+  {
+    "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.Resources/deployments/Microsoft.Template/operations/F252EE4B0D42ACEF",
+    "operationId": "F252EE4B0D42ACEF",
+    "properties": {
+      "provisioningOperation": "Create",
+      "provisioningState": "Succeeded",
+      "timestamp": "2019-03-12T07:33:36.9115922Z",
+      "duration": "PT0.9671764S",
+      "trackingId": "b7e0131b-7dbc-4777-8105-06e1e83bc0f6",
+      "serviceRequestId": "d95f623b-4785-4c54-aa79-b7b373691741",
+      "statusCode": "OK",
+      "targetResource": {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/pipelines/Cosas_Data",
+        "resourceType": "Microsoft.DataFactory/factories/pipelines",
+        "resourceName": "wc-adf-test/Cosas_Data"
+      },
+      "request": {
+        "content": {
+          "properties": {
+            "description": "Copy all the tables of the CosasDatabase",
+            "activities": [
+              {
+                "name": "ForEach_cfi",
+                "type": "ForEach",
+                "dependsOn": [],
+                "userProperties": [],
+                "typeProperties": {
+                  "items": {
+                    "value": "@pipeline().parameters.cw_items",
+                    "type": "Expression"
+                  },
+                  "activities": [
+                    {
+                      "name": "Copy_cfi",
+                      "type": "Copy",
+                      "dependsOn": [],
+                      "policy": {
+                        "timeout": "7.00:00:00",
+                        "retry": 0,
+                        "retryIntervalInSeconds": 30,
+                        "secureOutput": false,
+                        "secureInput": false
+                      },
+                      "userProperties": [
+                        {
+                          "name": "Source",
+                          "value": "@{item().source.tableName}"
+                        },
+                        {
+                          "name": "Destination",
+                          "value": "adfstagedcopytempdata/@{item().destination.fileName}"
+                        }
+                      ],
+                      "typeProperties": {
+                        "source": {
+                          "type": "SqlSource"
+                        },
+                        "sink": {
+                          "type": "BlobSink",
+                          "copyBehavior": "MergeFiles"
+                        },
+                        "enableStaging": true,
+                        "stagingSettings": {
+                          "linkedServiceName": {
+                            "referenceName": "LinkedServiceCosasBlob",
+                            "type": "LinkedServiceReference"
+                          },
+                          "path": "adfstagedcopytempdata"
+                        },
+                        "enableSkipIncompatibleRow": true,
+                        "redirectIncompatibleRowSettings": {
+                          "linkedServiceName": {
+                            "referenceName": "LinkedServiceCosasBlob",
+                            "type": "LinkedServiceReference"
+                          },
+                          "path": "adfstagedcopytempdata"
+                        }
+                      },
+                      "inputs": [
+                        {
+                          "referenceName": "SourceDataset_cfi",
+                          "type": "DatasetReference",
+                          "parameters": {
+                            "cw_tableName": "@item().source.tableName"
+                          }
+                        }
+                      ],
+                      "outputs": [
+                        {
+                          "referenceName": "DestinationDataset_cfi",
+                          "type": "DatasetReference",
+                          "parameters": {
+                            "cw_fileName": "@item().destination.fileName"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "parameters": {
+              "cw_items": {
+                "type": "Array",
+                "defaultValue": [
+                  {
+                    "source": {
+                      "tableName": "[dbo].[__MigrationHistory]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[__MigrationHistory].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Account]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Account].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[AdditionalTransactionRisk]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[AdditionalTransactionRisk].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[AdGroups]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[AdGroups].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Asset]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Asset].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[AssetCounterparty]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[AssetCounterparty].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[AuditTrail]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[AuditTrail].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[BookingEntity]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[BookingEntity].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[BusinessLine]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[BusinessLine].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[BusinessLineMigration]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[BusinessLineMigration].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[CalculationLogs]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[CalculationLogs].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[CapitalImpactLookupEntries]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[CapitalImpactLookupEntries].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ClassificationScheme]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ClassificationScheme].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ClassificationValue]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ClassificationValue].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Client]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Client].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ComminglingRisk]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ComminglingRisk].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ControlFactor]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ControlFactor].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[CosasClient]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[CosasClient].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[CosasDataset]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[CosasDataset].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Counterparty]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Counterparty].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[CountryDefinitions]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[CountryDefinitions].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[CountryOfRiskDivisions]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[CountryOfRiskDivisions].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Currency]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Currency].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[DealTypeQuestionnaireAnswers]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[DealTypeQuestionnaireAnswers].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Debtor]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Debtor].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[DebtorDiversifiedPool]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[DebtorDiversifiedPool].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[DebtorDiversifiedPoolConcentration]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[DebtorDiversifiedPoolConcentration].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[DebtorQuestionnaireAnswers]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[DebtorQuestionnaireAnswers].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[DecimalValue]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[DecimalValue].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Department]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Department].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[DilutionRisk]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[DilutionRisk].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[FxRate]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[FxRate].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[HelpText]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[HelpText].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Income]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Income].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Liability]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Liability].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[MaturityAdjustmentMultiplier]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[MaturityAdjustmentMultiplier].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Originator]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Originator].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ProbabilityOfDefault]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ProbabilityOfDefault].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ProductNumber]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ProductNumber].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ProgramPwceCalcResultsTrails]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ProgramPwceCalcResultsTrails].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ProgramQuestionnaireAnswers]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ProgramQuestionnaireAnswers].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Programs]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Programs].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ProgramStatus]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ProgramStatus].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ProtectedDebtorPart]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ProtectedDebtorPart].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Protection]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Protection].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[PwceRiskWeightLookupEntries]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[PwceRiskWeightLookupEntries].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[QuestionCodes]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[QuestionCodes].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[RaboRiskRating]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[RaboRiskRating].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Receivables]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Receivables].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ReceivablesProtection]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ReceivablesProtection].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ReceivablesPwceCalcResultsTrails]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ReceivablesPwceCalcResultsTrails].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Risk]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Risk].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[RiskDivision]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[RiskDivision].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[RiskWeightDefinitions]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[RiskWeightDefinitions].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Role]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Role].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[RoleDefinition]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[RoleDefinition].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[SecurityGroup]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[SecurityGroup].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[SeederMetaDatas]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[SeederMetaDatas].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Servicer]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Servicer].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Session]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Session].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Spv]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Spv].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[SpvLiability]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[SpvLiability].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[SpvProtection]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[SpvProtection].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Status]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Status].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Structure]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Structure].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[StructureNumbers]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[StructureNumbers].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[SubModels]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[SubModels].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[sysdiagrams]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[sysdiagrams].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Tranche]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Tranche].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[TrancheCalcResults]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[TrancheCalcResults].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[TranchedCalcResults]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[TranchedCalcResults].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[TranchedTrancheCalcResults]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[TranchedTrancheCalcResults].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Vasicek]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Vasicek].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[VisitedStructure]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[VisitedStructure].csv"
+                    }
+                  }
+                ]
+              }
+            },
+            "annotations": []
+          }
+        }
+      },
+      "response": {
+        "content": {
+          "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/pipelines/Cosas_Data",
+          "name": "Cosas_Data",
+          "type": "Microsoft.DataFactory/factories/pipelines",
+          "properties": {
+            "description": "Copy all the tables of the CosasDatabase",
+            "activities": [
+              {
+                "name": "ForEach_cfi",
+                "type": "ForEach",
+                "dependsOn": [],
+                "userProperties": [],
+                "typeProperties": {
+                  "items": {
+                    "value": "@pipeline().parameters.cw_items",
+                    "type": "Expression"
+                  },
+                  "activities": [
+                    {
+                      "name": "Copy_cfi",
+                      "type": "Copy",
+                      "dependsOn": [],
+                      "policy": {
+                        "timeout": "7.00:00:00",
+                        "retry": 0,
+                        "retryIntervalInSeconds": 30,
+                        "secureOutput": false,
+                        "secureInput": false
+                      },
+                      "userProperties": [
+                        {
+                          "name": "Source",
+                          "value": "@{item().source.tableName}"
+                        },
+                        {
+                          "name": "Destination",
+                          "value": "adfstagedcopytempdata/@{item().destination.fileName}"
+                        }
+                      ],
+                      "typeProperties": {
+                        "source": {
+                          "type": "SqlSource"
+                        },
+                        "sink": {
+                          "type": "BlobSink",
+                          "copyBehavior": "MergeFiles"
+                        },
+                        "enableStaging": true,
+                        "stagingSettings": {
+                          "linkedServiceName": {
+                            "referenceName": "LinkedServiceCosasBlob",
+                            "type": "LinkedServiceReference"
+                          },
+                          "path": "adfstagedcopytempdata"
+                        },
+                        "enableSkipIncompatibleRow": true,
+                        "redirectIncompatibleRowSettings": {
+                          "linkedServiceName": {
+                            "referenceName": "LinkedServiceCosasBlob",
+                            "type": "LinkedServiceReference"
+                          },
+                          "path": "adfstagedcopytempdata"
+                        }
+                      },
+                      "inputs": [
+                        {
+                          "referenceName": "SourceDataset_cfi",
+                          "type": "DatasetReference",
+                          "parameters": {
+                            "cw_tableName": "@item().source.tableName"
+                          }
+                        }
+                      ],
+                      "outputs": [
+                        {
+                          "referenceName": "DestinationDataset_cfi",
+                          "type": "DatasetReference",
+                          "parameters": {
+                            "cw_fileName": "@item().destination.fileName"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "parameters": {
+              "cw_items": {
+                "type": "Array",
+                "defaultValue": [
+                  {
+                    "source": {
+                      "tableName": "[dbo].[__MigrationHistory]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[__MigrationHistory].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Account]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Account].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[AdditionalTransactionRisk]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[AdditionalTransactionRisk].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[AdGroups]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[AdGroups].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Asset]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Asset].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[AssetCounterparty]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[AssetCounterparty].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[AuditTrail]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[AuditTrail].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[BookingEntity]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[BookingEntity].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[BusinessLine]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[BusinessLine].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[BusinessLineMigration]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[BusinessLineMigration].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[CalculationLogs]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[CalculationLogs].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[CapitalImpactLookupEntries]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[CapitalImpactLookupEntries].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ClassificationScheme]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ClassificationScheme].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ClassificationValue]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ClassificationValue].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Client]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Client].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ComminglingRisk]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ComminglingRisk].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ControlFactor]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ControlFactor].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[CosasClient]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[CosasClient].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[CosasDataset]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[CosasDataset].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Counterparty]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Counterparty].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[CountryDefinitions]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[CountryDefinitions].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[CountryOfRiskDivisions]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[CountryOfRiskDivisions].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Currency]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Currency].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[DealTypeQuestionnaireAnswers]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[DealTypeQuestionnaireAnswers].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Debtor]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Debtor].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[DebtorDiversifiedPool]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[DebtorDiversifiedPool].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[DebtorDiversifiedPoolConcentration]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[DebtorDiversifiedPoolConcentration].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[DebtorQuestionnaireAnswers]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[DebtorQuestionnaireAnswers].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[DecimalValue]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[DecimalValue].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Department]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Department].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[DilutionRisk]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[DilutionRisk].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[FxRate]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[FxRate].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[HelpText]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[HelpText].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Income]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Income].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Liability]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Liability].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[MaturityAdjustmentMultiplier]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[MaturityAdjustmentMultiplier].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Originator]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Originator].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ProbabilityOfDefault]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ProbabilityOfDefault].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ProductNumber]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ProductNumber].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ProgramPwceCalcResultsTrails]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ProgramPwceCalcResultsTrails].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ProgramQuestionnaireAnswers]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ProgramQuestionnaireAnswers].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Programs]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Programs].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ProgramStatus]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ProgramStatus].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ProtectedDebtorPart]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ProtectedDebtorPart].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Protection]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Protection].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[PwceRiskWeightLookupEntries]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[PwceRiskWeightLookupEntries].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[QuestionCodes]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[QuestionCodes].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[RaboRiskRating]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[RaboRiskRating].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Receivables]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Receivables].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ReceivablesProtection]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ReceivablesProtection].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[ReceivablesPwceCalcResultsTrails]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[ReceivablesPwceCalcResultsTrails].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Risk]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Risk].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[RiskDivision]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[RiskDivision].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[RiskWeightDefinitions]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[RiskWeightDefinitions].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Role]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Role].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[RoleDefinition]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[RoleDefinition].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[SecurityGroup]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[SecurityGroup].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[SeederMetaDatas]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[SeederMetaDatas].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Servicer]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Servicer].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Session]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Session].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Spv]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Spv].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[SpvLiability]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[SpvLiability].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[SpvProtection]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[SpvProtection].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Status]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Status].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Structure]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Structure].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[StructureNumbers]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[StructureNumbers].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[SubModels]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[SubModels].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[sysdiagrams]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[sysdiagrams].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Tranche]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Tranche].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[TrancheCalcResults]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[TrancheCalcResults].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[TranchedCalcResults]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[TranchedCalcResults].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[TranchedTrancheCalcResults]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[TranchedTrancheCalcResults].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[Vasicek]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[Vasicek].csv"
+                    }
+                  },
+                  {
+                    "source": {
+                      "tableName": "[dbo].[VisitedStructure]"
+                    },
+                    "destination": {
+                      "fileName": "[dbo].[VisitedStructure].csv"
+                    }
+                  }
+                ]
+              }
+            },
+            "annotations": []
+          },
+          "etag": "2400b40c-0000-0000-0000-5c8760d00000"
+        }
+      }
+    }
+  },
+  {
+    "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.Resources/deployments/Microsoft.Template/operations/D32C5C8B41D03745",
+    "operationId": "D32C5C8B41D03745",
+    "properties": {
+      "provisioningOperation": "Create",
+      "provisioningState": "Succeeded",
+      "timestamp": "2019-03-12T07:33:35.9070944Z",
+      "duration": "PT0.2909884S",
+      "trackingId": "9dea4f37-ccaf-4664-b619-9fcedde22bfb",
+      "serviceRequestId": "fa695f48-b58d-46b5-ad21-4ca21d0b39e4",
+      "statusCode": "OK",
+      "targetResource": {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/datasets/SourceDataset_cfi",
+        "resourceType": "Microsoft.DataFactory/factories/datasets",
+        "resourceName": "wc-adf-test/SourceDataset_cfi"
+      },
+      "request": {
+        "content": {
+          "properties": {
+            "linkedServiceName": {
+              "referenceName": "LinkedServiceCosas",
+              "type": "LinkedServiceReference"
+            },
+            "parameters": {
+              "cw_tableName": {
+                "type": "String"
+              }
+            },
+            "annotations": [],
+            "type": "SqlServerTable",
+            "typeProperties": {
+              "tableName": {
+                "value": "@dataset().cw_tableName",
+                "type": "Expression"
+              }
+            }
+          }
+        }
+      },
+      "response": {
+        "content": {
+          "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/datasets/SourceDataset_cfi",
+          "name": "SourceDataset_cfi",
+          "type": "Microsoft.DataFactory/factories/datasets",
+          "properties": {
+            "linkedServiceName": {
+              "referenceName": "LinkedServiceCosas",
+              "type": "LinkedServiceReference"
+            },
+            "parameters": {
+              "cw_tableName": {
+                "type": "String"
+              }
+            },
+            "annotations": [],
+            "type": "SqlServerTable",
+            "typeProperties": {
+              "tableName": {
+                "value": "@dataset().cw_tableName",
+                "type": "Expression"
+              }
+            }
+          },
+          "etag": "00000000-0000-0000-0000-000000000000"
+        }
+      }
+    }
+  },
+  {
+    "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.Resources/deployments/Microsoft.Template/operations/4978F3926B19353A",
+    "operationId": "4978F3926B19353A",
+    "properties": {
+      "provisioningOperation": "Create",
+      "provisioningState": "Succeeded",
+      "timestamp": "2019-03-12T07:33:35.5804179Z",
+      "duration": "PT1.760174S",
+      "trackingId": "945fbae6-3e5f-4f1f-895b-b3599c897a48",
+      "serviceRequestId": "18f9d475-f61c-456d-bb90-2dbedab81f1e",
+      "statusCode": "OK",
+      "targetResource": {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/linkedServices/LinkedServiceCosas",
+        "resourceType": "Microsoft.DataFactory/factories/linkedServices",
+        "resourceName": "wc-adf-test/LinkedServiceCosas"
+      },
+      "request": {
+        "content": {
+          "properties": {
+            "annotations": [],
+            "type": "SqlServer",
+            "typeProperties": {
+              "connectionString": "\"integrated security=True;data source=WSDE000279;initial catalog=CosasDatabase\",",
+              "userName": "RABODEVEU\\Eijndhovenc",
+              "password": {
+                "type": "SecureString",
+                "value": "deJongpsv1"
+              }
+            },
+            "connectVia": {
+              "referenceName": "Integration-Runtime-Cosas",
+              "type": "IntegrationRuntimeReference"
+            }
+          }
+        }
+      },
+      "response": {
+        "content": {
+          "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/linkedservices/LinkedServiceCosas",
+          "name": "LinkedServiceCosas",
+          "type": "Microsoft.DataFactory/factories/linkedservices",
+          "properties": {
+            "annotations": [],
+            "type": "SqlServer",
+            "typeProperties": {
+              "connectionString": "\"integrated security=True;data source=WSDE000279;initial catalog='CosasDatabase\",'",
+              "userName": "RABODEVEU\\Eijndhovenc",
+              "encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIzZDg5MjIyZC1mZjY4LTQ5YTItOTkyYy04OTkwNWNjNWI3NGUiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+            },
+            "connectVia": {
+              "referenceName": "Integration-Runtime-Cosas",
+              "type": "IntegrationRuntimeReference"
+            }
+          },
+          "etag": "2400af0c-0000-0000-0000-5c8760cf0000"
+        }
+      }
+    }
+  },
+  {
+    "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.Resources/deployments/Microsoft.Template/operations/D6A1A5E00087EE51",
+    "operationId": "D6A1A5E00087EE51",
+    "properties": {
+      "provisioningOperation": "Create",
+      "provisioningState": "Succeeded",
+      "timestamp": "2019-03-12T07:33:34.5849003Z",
+      "duration": "PT0.5712081S",
+      "trackingId": "9c6cba7a-c3f9-48a2-9ed3-51a74031fe13",
+      "serviceRequestId": "b670f53b-c845-4ac7-b96f-35bb80f9184c",
+      "statusCode": "OK",
+      "targetResource": {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/datasets/DestinationDataset_cfi",
+        "resourceType": "Microsoft.DataFactory/factories/datasets",
+        "resourceName": "wc-adf-test/DestinationDataset_cfi"
+      },
+      "request": {
+        "content": {
+          "properties": {
+            "linkedServiceName": {
+              "referenceName": "LinkedServiceCosasBlob",
+              "type": "LinkedServiceReference"
+            },
+            "parameters": {
+              "cw_fileName": {
+                "type": "String"
+              }
+            },
+            "annotations": [],
+            "type": "AzureBlob",
+            "typeProperties": {
+              "format": {
+                "type": "TextFormat",
+                "columnDelimiter": ",",
+                "rowDelimiter": "",
+                "nullValue": "\\N",
+                "treatEmptyAsNull": true,
+                "skipLineCount": 0,
+                "firstRowAsHeader": true
+              },
+              "fileName": {
+                "value": "@dataset().cw_fileName",
+                "type": "Expression"
+              },
+              "folderPath": "adfstagedcopytempdata"
+            }
+          }
+        }
+      },
+      "response": {
+        "content": {
+          "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/datasets/DestinationDataset_cfi",
+          "name": "DestinationDataset_cfi",
+          "type": "Microsoft.DataFactory/factories/datasets",
+          "properties": {
+            "linkedServiceName": {
+              "referenceName": "LinkedServiceCosasBlob",
+              "type": "LinkedServiceReference"
+            },
+            "parameters": {
+              "cw_fileName": {
+                "type": "String"
+              }
+            },
+            "annotations": [],
+            "type": "AzureBlob",
+            "typeProperties": {
+              "format": {
+                "type": "TextFormat",
+                "columnDelimiter": ",",
+                "rowDelimiter": "",
+                "nullValue": "\\N",
+                "treatEmptyAsNull": true,
+                "skipLineCount": 0,
+                "firstRowAsHeader": true
+              },
+              "fileName": {
+                "value": "@dataset().cw_fileName",
+                "type": "Expression"
+              },
+              "folderPath": "adfstagedcopytempdata"
+            }
+          },
+          "etag": "00000000-0000-0000-0000-000000000000"
+        }
+      }
+    }
+  },
+  {
+    "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.Resources/deployments/Microsoft.Template/operations/776CCE6ADB6FF0C2",
+    "operationId": "776CCE6ADB6FF0C2",
+    "properties": {
+      "provisioningOperation": "Create",
+      "provisioningState": "Succeeded",
+      "timestamp": "2019-03-12T07:33:33.9787022Z",
+      "duration": "PT1.7696182S",
+      "trackingId": "83bf9ae4-a4b8-4747-922a-146afa0a9a19",
+      "serviceRequestId": "ee118076-ca41-4cf3-92fc-de6b9a7e8756",
+      "statusCode": "OK",
+      "targetResource": {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/linkedServices/LinkedServiceCosasBlob",
+        "resourceType": "Microsoft.DataFactory/factories/linkedServices",
+        "resourceName": "wc-adf-test/LinkedServiceCosasBlob"
+      },
+      "request": {
+        "content": {
+          "properties": {
+            "annotations": [],
+            "type": "AzureBlobStorage",
+            "typeProperties": {
+              "connectionString": "DefaultEndpointsProtocol=https;AccountName=wcteststorageaccount;AccountKey=CCMVrrJDb4wBdHjfI6GNuInwXU9rz1sEH+Mk9Of7EgTyliAZ1q54RLeKxPKK4pRLrTZrGdvgigzOFws5V981Bg==;EndpointSuffix=core.windows.net"
+            }
+          }
+        }
+      },
+      "response": {
+        "content": {
+          "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/linkedservices/LinkedServiceCosasBlob",
+          "name": "LinkedServiceCosasBlob",
+          "type": "Microsoft.DataFactory/factories/linkedservices",
+          "properties": {
+            "annotations": [],
+            "type": "AzureBlobStorage",
+            "typeProperties": {
+              "connectionString": "DefaultEndpointsProtocol=https;AccountName=wcteststorageaccount;EndpointSuffix=core.windows.net;",
+              "encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIldDLUFERi1URVNUXzVhMzc3NTMxLTc1MTEtNDA5MC1hNTQwLTNlM2YwY2M4YmY3MSINCn0="
+            }
+          },
+          "etag": "24009d0c-0000-0000-0000-5c8760cc0000"
+        }
+      }
+    }
+  },
+  {
+    "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.Resources/deployments/Microsoft.Template/operations/CC37DDCA6C142F6D",
+    "operationId": "CC37DDCA6C142F6D",
+    "properties": {
+      "provisioningOperation": "Create",
+      "provisioningState": "Succeeded",
+      "timestamp": "2019-03-12T07:33:33.7857395Z",
+      "duration": "PT1.5766555S",
+      "trackingId": "2cba3e42-9985-48b1-8e0a-f2c733bb8eab",
+      "serviceRequestId": "faca7241-c54e-427c-bc1f-e73ab7bce8a0",
+      "statusCode": "OK",
+      "targetResource": {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/integrationRuntimes/Integration-Runtime-Cosas",
+        "resourceType": "Microsoft.DataFactory/factories/integrationRuntimes",
+        "resourceName": "wc-adf-test/Integration-Runtime-Cosas"
+      },
+      "request": {
+        "content": {
+          "properties": {
+            "type": "SelfHosted",
+            "typeProperties": {}
+          }
+        }
+      },
+      "response": {
+        "content": {
+          "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/integrationruntimes/Integration-Runtime-Cosas",
+          "name": "Integration-Runtime-Cosas",
+          "type": "Microsoft.DataFactory/factories/integrationruntimes",
+          "properties": {
+            "type": "SelfHosted",
+            "typeProperties": {}
+          },
+          "etag": "00000000-0000-0000-0000-000000000000"
+        }
+      }
+    }
+  },
+  {
+    "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.Resources/deployments/Microsoft.Template/operations/A03F7BC6F7C4FADA",
+    "operationId": "A03F7BC6F7C4FADA",
+    "properties": {
+      "provisioningOperation": "Create",
+      "provisioningState": "Succeeded",
+      "timestamp": "2019-03-12T07:33:33.6064909Z",
+      "duration": "PT1.3974069S",
+      "trackingId": "89c02385-8ea6-4eeb-bd8d-496fbe738f90",
+      "serviceRequestId": "66601298-533c-4dbb-84c7-67bc44aea973",
+      "statusCode": "OK",
+      "targetResource": {
+        "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/triggers/trigger1",
+        "resourceType": "Microsoft.DataFactory/factories/triggers",
+        "resourceName": "wc-adf-test/trigger1"
+      },
+      "request": {
+        "content": {
+          "properties": {
+            "annotations": [],
+            "runtimeState": "Started",
+            "pipelines": [],
+            "type": "ScheduleTrigger",
+            "typeProperties": {
+              "recurrence": {
+                "frequency": "Hour",
+                "interval": 1,
+                "startTime": "2019-01-14T14:50:00.000Z",
+                "endTime": "2019-01-31T14:50:00.000Z",
+                "timeZone": "UTC"
+              }
+            }
+          }
+        }
+      },
+      "response": {
+        "content": {
+          "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.DataFactory/factories/wc-adf-test/triggers/trigger1",
+          "name": "trigger1",
+          "type": "Microsoft.DataFactory/factories/triggers",
+          "properties": {
+            "annotations": [],
+            "runtimeState": "Stopped",
+            "pipelines": [],
+            "type": "ScheduleTrigger",
+            "typeProperties": {
+              "recurrence": {
+                "frequency": "Hour",
+                "interval": 1,
+                "startTime": "2019-01-14T14:50:00Z",
+                "endTime": "2019-01-31T14:50:00Z",
+                "timeZone": "UTC"
+              }
+            }
+          },
+          "etag": "24009a0c-0000-0000-0000-5c8760cc0000"
+        }
+      }
+    }
+  },
+  {
+    "id": "/subscriptions/d65193b5-a500-405c-b6f4-767fb5063969/resourceGroups/rg-d02-dev-rdmsdev-01/providers/Microsoft.Resources/deployments/Microsoft.Template/operations/08586492308785843673",
+    "operationId": "08586492308785843673",
+    "properties": {
+      "provisioningOperation": "EvaluateDeploymentOutput",
+      "provisioningState": "Succeeded",
+      "timestamp": "2019-03-12T07:33:37.1611184Z",
+      "duration": "PT0.2096905S",
+      "trackingId": "69eca539-144b-4209-8f93-9de323859626",
+      "statusCode": "OK",
+      "statusMessage": null
+    }
+  }
+]

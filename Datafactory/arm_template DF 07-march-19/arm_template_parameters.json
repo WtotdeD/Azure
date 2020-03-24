@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "value": "wc-adf-test"
+        },
+        "LinkedServiceCosas_connectionString": {
+            "value": "integrated security=True;data source=WSDE000279;initial catalog=CosasDatabase"
+        },
+        "LinkedServiceCosas_password": {
+            "value": "deJongpsv1"
+        },
+        "LinkedServiceCosasBlob_connectionString": {
+            "value": "DefaultEndpointsProtocol=https;AccountName=wcteststorageaccount;AccountKey=CCMVrrJDb4wBdHjfI6GNuInwXU9rz1sEH+Mk9Of7EgTyliAZ1q54RLeKxPKK4pRLrTZrGdvgigzOFws5V981Bg==;EndpointSuffix=core.windows.net"
+        },
+        "DestinationDataset_cfi_properties_typeProperties_fileName": {
+            "value": "@dataset().cw_fileName"
+        },
+        "DestinationDataset_cfi_properties_typeProperties_folderPath": {
+            "value": "adfstagedcopytempdata"
+        },
+        "LinkedServiceCosas_properties_typeProperties_userName": {
+            "value": "RABODEVEU\\Eijndhovenc"
+        }
+    }
+}
