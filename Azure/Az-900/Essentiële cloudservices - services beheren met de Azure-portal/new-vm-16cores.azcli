@@ -1,0 +1,9 @@
+#new vm 16 cores azcli
+  az vm create \
+    --resource-group learn-8811fcef-f545-4e35-9cc8-d81aee720422 \
+    --name SampleVM2 \
+    --image UbuntuLTS \
+    --admin-username azureuser \
+    --generate-ssh-keys \
+    --verbose \
+    --size "Standard_DS5_v2"

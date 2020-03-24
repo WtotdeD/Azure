@@ -1,0 +1,3 @@
+Het is een lijst met de populairste installatiekopieën die deel uitmaken van een offlinelijst die in Azure CLI is ingebouwd. Er zijn echter honderden opties voor installatiekopieën beschikbaar in Microsoft Azure Marketplace.
+
+az vm image list --output table
